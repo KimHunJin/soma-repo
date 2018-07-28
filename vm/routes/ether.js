@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var executionContext = require('./ethereum/execution-context');
 var dApp = require('./ethereum/dApp');
+var compile = require('./ethereum/compile');
 
 router.get('/', function(req, res) {
 	var context = executionContext;
@@ -15,6 +16,8 @@ router.get('/', function(req, res) {
   console.log('---------------dapp--------------');
   console.log(udapp);
 
+  console.log('----------------solc----------------');
+  console.log(compile);
 });
 
 module.exports = router;
