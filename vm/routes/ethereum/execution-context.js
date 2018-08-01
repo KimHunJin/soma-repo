@@ -58,17 +58,21 @@ function ExecutionContext(){
 	var self = this;
 	var excutionContext = null;
 
-	self.blockGasLimitDefault = 4300000;
-	self.blockGasLimit = self.blockGasLimitDefault;
+	this.blockGasLimitDefault = 4300000;
+	this.blockGasLimit = self.blockGasLimitDefault;
 
-	self.excutionContext = 'vm';
+	this.excutionContext = 'vm';
 
-	self.getProvider = function() {
+	this.getProvider = function() {
 		return excutionContext;
 	}
 
-	self.vm = function() {
+	this.vm = function() {
 		return vm;
+	}
+
+	this.web3 = function() {
+		return web3Vm;
 	}
 }
 
