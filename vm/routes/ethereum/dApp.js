@@ -4,9 +4,11 @@ var TxRunner = require('ethereumjs-tx');
 var ethJSUtil = require('ethereumjs-util');
 var globalRegistry = require('./global/registry');
 var txExecution = require('./txExecution');
+var EventManasger = require('./eventManager');
 
 function UniversalDApp (opts, localRegistry) {
   var self = this
+  this.event = new EventManasger();
   self.data = {}
   self._components = {}
   self._components.registry = localRegistry || globalRegistry
