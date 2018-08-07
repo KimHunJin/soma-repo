@@ -1,23 +1,21 @@
+var App = require('./ethereum/app');
 var express = require('express');
 var router = express.Router();
-var executionContext = require('./ethereum/execution-context');
-var dApp = require('./ethereum/dApp');
-var compile = require('./ethereum/compile');
+var compile = require('./ethereum/compile/compile');
+
+var app = new App({});
+app.init();
 
 router.get('/', function(req, res) {
-	// var context = executionContext;
-	// console.log('---------------vm---------------');
-	// console.log(context.vm());
+	app.getAccount();
+});
 
-  var udapp = new dApp({
-    removable: false,
-    removable_instances: true
-  });
-  // console.log('---------------dapp--------------');
-  // console.log(udapp);
+router.get('/addAccount', function(req, res) {
+	app.createAccount();
+});
 
-  // console.log('----------------solc----------------');
-  // console.log(compile);
+router.get('/compiler', function(req, res) {
+	compile;
 });
 
 module.exports = router;

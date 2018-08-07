@@ -5,6 +5,7 @@ var ethJSUtil = require('ethereumjs-util');
 var globalRegistry = require('./global/registry');
 var txExecution = require('./txExecution');
 var EventManasger = require('./eventManager');
+var crypto = require('crypto');
 
 function UniversalDApp (opts, localRegistry) {
   var self = this
@@ -72,6 +73,16 @@ UniversalDApp.prototype.pendingTransactions = function () {
 
 UniversalDApp.prototype.pendingTransactionsCount = function () {
   return Object.keys(this.txRunner.pendingTxs).length;
+}
+
+UniversalDApp.prototype.newAccount = function (password, cb) {
+
+  var privateKey
+  do {
+    privateKey = crypto.randomBytes(32)
+  } while (!ethJSUtil.isValidPrivate(privateKey))
+  this._addAccount(privateKey, '0x56BC75E2D63100000')
+  cb(null, '0x' + ethJSUtil.privateToAddress(privateKey).toString('hex'))
 }
 
 UniversalDApp.prototype.call = function (isUserAction, args, value, lookupOnly, outputCb) {
