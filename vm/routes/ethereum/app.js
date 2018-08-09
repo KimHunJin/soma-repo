@@ -34,12 +34,14 @@ function createInstance() {
 
 	var contract = '';
 
+	// 여기서 compiler로부터 abi만 추출 받는다.
 	var constructor = txHelper.getConstructorInterface(contract.contract.object.abi);
 	txFormat.buildData(selectedContract.name, contract.contract.object, self.compiler.getContracts(), true, constructor, args, (error, data) => {
 		dapp.createContract(data, (error, txResult) => {
 			if(txResult.result.status && txResult.result.status == '0x0') {
 				console.log('transaction execution fail');
 			}
+			console.log(data);
 		});
 	});
 }
