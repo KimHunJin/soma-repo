@@ -32,6 +32,11 @@ function createInstance() {
 
 	var dapp = registry.get('udapp').api;
 
+	// contract 구조
+	//	{
+	//		object : contracts[file][contractName]
+	//		file   : file
+	//	}
 	var contract = '';
 
 	// 여기서 compiler로부터 abi만 추출 받는다.

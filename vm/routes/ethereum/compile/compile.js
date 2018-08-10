@@ -2,16 +2,23 @@
 
 var solc = require('solc');
 var fs = require('fs');
+var compilerInput = require('./compiler-input');
 var registry = require('../global/registry');
 
-class Compile {
+function Compile {
+	var self = this;
+
+	this.lastCompilationResult = {
+		data: null,
+		source: null
+	}
 
 	fs.readFile('./contract/Casino.sol', 'utf8', function(err, data) {
 		if(err) {throw err};
+		// compiler version get from online
 		solc.loadRemoteVersion('latest', function (err, solcSnapshot) {
 			if (err) {
 				console.log(err);
-		// An error was encountered, display and quit
 			}
 
 			var p = new Promise(
@@ -21,11 +28,10 @@ class Compile {
 			);
 			p.then(
 				function(val) {
-					//TODO ; abi 추출
-					var bytecode = val.contracts[':Casino'].bytecode;
+					var bytecode = val.contracts[':Casino'].bytecode; // bytecode
 					console.log(bytecode);
 
-					var abi = JSON.parse(val.contracts[':Casino'].interface);
+					var abi = JSON.parse(val.contracts[':Casino'].interface); // abi
 					console.log(abi);
 				}
 			);
