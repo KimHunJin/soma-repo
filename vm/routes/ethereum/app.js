@@ -26,6 +26,14 @@ class App {
 		var self = this;
 		addAccount.apply(self);
 	}
+
+	runCompiler() {
+		var self = this;
+		var target = "casino";
+		var sources = {};
+
+		// var provider =
+	}
 }
 
 function createInstance() {
