@@ -15,7 +15,7 @@ router.get('/addAccount', function(req, res) {
 });
 
 router.get('/compiler', function(req, res) {
-	compile;
+	app.runCompiler();
 });
 
 module.exports = router;

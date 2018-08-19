@@ -1,10 +1,12 @@
 'use strict'
 var executionContext = require('./execution-context');
 var dApp = require('./dApp');
-var Compiler = require('./compile/compile');
+//var Compiler = require('./compile/compile');
 var registry = require('./global/registry');
 var txFormat = require('./txFormat');
 var txHelper = require('./txHelper');
+var fs = require('fs');
+var Compiler = require('./compile/compile');
 
 class App {
 	constructor() {
@@ -17,6 +19,7 @@ class App {
 		run.apply(self);
 	}
 
+// 개인 정보
 	getAccount() {
 		var self = this;
 		accounts.apply(self);
@@ -32,8 +35,52 @@ class App {
 		var target = "casino";
 		var sources = {};
 
+		var compiler = new Compiler();
+
+		var content = getContent();
+		sources[target] = { content };
+
+		compiler.compile(sources, target);
+	
 		// var provider =
 	}
+}
+
+function getContent() {
+	var content = "";
+	fs.readFile('./contract/Casino.sol', 'utf8', function(err, data){
+		if(err) {
+			console.log(err);
+		}
+		content = data;
+	});
+	return fs;
+		// fs.readFile('./contract/Casino.sol', 'utf8', function(err, data) {
+		// 	if(err) {
+		// 		throw err
+		// 	};
+		// // compiler version get from online
+		// 	solc.loadRemoteVersion('latest', function (err, solcSnapshot) {
+		// 		if (err) {
+		// 			console.log(err);
+		// 		}
+
+		// 		var p = new Promise(
+		// 			function(res, rej) {
+		// 				res(solcSnapshot.compile(data, 1));
+		// 			}
+		// 		);
+		// 		p.then(
+		// 			function(val) {
+		// 				var bytecode = val.contracts[':Casino'].bytecode; // bytecode
+		// 				console.log(bytecode);	
+
+		// 				var abi = JSON.parse(val.contracts[':Casino'].interface); // abi
+		// 				console.log(abi);
+		// 			}
+		// 		);
+		// 	});
+		// });
 }
 
 function createInstance() {

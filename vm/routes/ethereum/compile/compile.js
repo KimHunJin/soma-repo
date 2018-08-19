@@ -4,11 +4,14 @@ var solc = require('solc');
 var fs = require('fs');
 var compilerInput = require('./compiler-input');
 var registry = require('../global/registry');
+var txHelper = require('./txHelper');
 
-function Compile {
+function Compile() {
 	var self = this;
 
 	var compileJSON;
+
+	onInternalCompilerLoaded();
 
 	this.lastCompilationResult = {
 		data: null,
@@ -21,6 +24,7 @@ function Compile {
 		//		'sources' : files
 		//		'target' : target
 		// }
+
 		var input = {
 			'sources' : files,
 			'target' : target
@@ -36,56 +40,34 @@ function Compile {
 
 	function onInternalCompilerLoaded() {
 
-		var input = compilerInput();
-
+//		var input = compilerInput();
+		var compiler = solc;
 		compileJSON = function(source, optimize, cb) {
-			var compiler = solc;
+
         	var missingInputs = [];
         	var missingInputsCallback = function (path) {
           		missingInputs.push(path);
-          		return { error: 'Deferred import'; }
+          		return { error: 'Deferred import' }
         	}			
+
+
+        	console.log(source);
+        	console.log(source.sources);
 			var result;
         	try {
         		var input = compilerInput(source.sources, {optimize: 1, target: source.target});
         		result = compiler.compileStandardWrapper(input, missingInputsCallback);
         		result = JSON.parse(result);
+        		console.log(result);
         	} catch (exception) {
         		result = { 
-        			error: 'Uncaught JavaScript exception:\n' + exception;
+        			error: 'Uncaught JavaScript exception:\n' + exception
         		}
         	}
         	compilationFinished(result, missingInputs, source);
 		}
-
-		// fs.readFile('./contract/Casino.sol', 'utf8', function(err, data) {
-		// 	if(err) {
-		// 		throw err
-		// 	};
-		// // compiler version get from online
-		// 	solc.loadRemoteVersion('latest', function (err, solcSnapshot) {
-		// 		if (err) {
-		// 			console.log(err);
-		// 		}
-
-		// 		var p = new Promise(
-		// 			function(res, rej) {
-		// 				res(solcSnapshot.compile(data, 1));
-		// 			}
-		// 		);
-		// 		p.then(
-		// 			function(val) {
-		// 				var bytecode = val.contracts[':Casino'].bytecode; // bytecode
-		// 				console.log(bytecode);	
-
-		// 				var abi = JSON.parse(val.contracts[':Casino'].interface); // abi
-		// 				console.log(abi);
-		// 			}
-		// 		);
-		// 	});
-		// });	
-
 	}
+
   
 	function compilationFinished (data, missingInputs, source) {
     	var noFatalErrors = true // ie warnings are ok
@@ -115,10 +97,33 @@ function Compile {
 
 	function updateInterface (data) {
 		txHelper.visitContracts(data.contracts, (contract) => {
-      		ㅌ.contracts[contract.file][contract.name].abi = solcABI.update(truncateVersion(currentVersion), contract.object.abi);
+      		contracts[contract.file][contract.name].abi = solcABI.update(truncateVersion(currentVersion), contract.object.abi);
     	});
     	return data;
   	}
+  	function loadInternal (url) {
+    	delete window.Module
+    	// NOTE: workaround some browsers?
+    	window.Module = undefined
+
+    // Set a safe fallback until the new one is loaded
+    	setCompileJSON(function (source, optimize) {
+    	  compilationFinished({ error: { formattedMessage: 'Compiler not yet loaded.' } })
+    	})
+
+	    var newScript = document.createElement('script')
+   		newScript.type = 'text/javascript'
+    	newScript.src = url
+    	document.getElementsByTagName('head')[0].appendChild(newScript)
+    	var check = window.setInterval(function () {
+    		if (!window.Module) {
+        		return
+      		}
+     		window.clearInterval(check)
+     		onInternalCompilerLoaded()
+    		}, 200)
+  	}
+
 }
 
 
