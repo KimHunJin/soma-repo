@@ -33,16 +33,18 @@ function Compile() {
   	}
 
   	var compile = function (files, target) {
-    	internalCompile(files, target);
+  		console.log('compile');
+    	internalCompile(files, target);    
   	}
 
   	this.compile = compile;
 
 	function onInternalCompilerLoaded() {
 
-//		var input = compilerInput();
+		console.log('on Internal Compiler Loaded');
 		var compiler = solc;
 		compileJSON = function(source, optimize, cb) {
+			console.log('compile json');
 
         	var missingInputs = [];
         	var missingInputsCallback = function (path) {
@@ -50,24 +52,40 @@ function Compile() {
           		return { error: 'Deferred import' }
         	}			
 
-
-        	console.log(source);
-        	console.log(source.sources);
 			var result;
-        	try {
-        		var input = compilerInput(source.sources, {optimize: 1, target: source.target});
-        		result = compiler.compileStandardWrapper(input, missingInputsCallback);
-        		result = JSON.parse(result);
-        		console.log(result);
-        	} catch (exception) {
-        		result = { 
-        			error: 'Uncaught JavaScript exception:\n' + exception
+			var getSource = source.sources;
+        	var test = new Promise(function(resolve, reject) {
+        			solc.loadRemoteVersion('latest', function (err, solcSnapshot) {
+						if (err) {
+							// An error was encountered, display and quit
+						}
+						var output = solcSnapshot.compile(getSource, 1)
+	        			resolve(output);						
+					})        		
+        	}).then(sources => {
+        		try {
+//        			console.log(sources);
+        			var input = compilerInput(sources, {optimize: 1, target: source.target});
+        			console.log(input);
+        			result = compiler.compileStandardWrapper(input, missingInputsCallback);
+        			result = JSON.parse(result);
+        		} catch (exception) {
+        			result = { 
+        				error: 'Uncaught JavaScript exception:\n' + exception
+        			}
         		}
-        	}
-        	compilationFinished(result, missingInputs, source);
+        		console.log(result);	 
+	        	compilationFinished(result, missingInputs, source);        		
+        	});
+
 		}
 	}
-
+	function findImports (path) {
+		if (path === 'lib.sol')
+			return { contents: 'library L { function f() returns (uint) { return 7; } }' }
+		else
+			return { error: 'File not found' }
+	}
   
 	function compilationFinished (data, missingInputs, source) {
     	var noFatalErrors = true // ie warnings are ok

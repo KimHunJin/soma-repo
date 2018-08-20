@@ -37,50 +37,26 @@ class App {
 
 		var compiler = new Compiler();
 
-		var content = getContent();
-		sources[target] = { content };
-
-		compiler.compile(sources, target);
-	
-		// var provider =
+		var content = new Promise(function(resolve, reject) {
+			resolve(getContent());
+		}).then(result => {
+			sources = result;
+//			sources[target] = result ;
+			compiler.compile(sources, target);
+		});
 	}
 }
 
 function getContent() {
-	var content = "";
-	fs.readFile('./contract/Casino.sol', 'utf8', function(err, data){
-		if(err) {
-			console.log(err);
-		}
-		content = data;
+	var content = new Promise(function(resolve, reject) {
+		fs.readFile('./contract/Casino.sol', 'utf8', function(err, data){
+			if(err) {
+				console.log(err);
+			}
+			resolve(data);
+		});
 	});
-	return fs;
-		// fs.readFile('./contract/Casino.sol', 'utf8', function(err, data) {
-		// 	if(err) {
-		// 		throw err
-		// 	};
-		// // compiler version get from online
-		// 	solc.loadRemoteVersion('latest', function (err, solcSnapshot) {
-		// 		if (err) {
-		// 			console.log(err);
-		// 		}
-
-		// 		var p = new Promise(
-		// 			function(res, rej) {
-		// 				res(solcSnapshot.compile(data, 1));
-		// 			}
-		// 		);
-		// 		p.then(
-		// 			function(val) {
-		// 				var bytecode = val.contracts[':Casino'].bytecode; // bytecode
-		// 				console.log(bytecode);	
-
-		// 				var abi = JSON.parse(val.contracts[':Casino'].interface); // abi
-		// 				console.log(abi);
-		// 			}
-		// 		);
-		// 	});
-		// });
+	return content;
 }
 
 function createInstance() {
