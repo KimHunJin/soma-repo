@@ -37,12 +37,17 @@ class App {
 
 		var compiler = new Compiler();
 
-		var content = new Promise(function(resolve, reject) {
+		var test = new Promise(function(resolve, reject) {
 			resolve(getContent());
-		}).then(result => {
-			sources = result;
+		}).then(content => {
+
+			sources = { content };
+			var t = { 
+				casino : sources
+			};
+//			console.log(t);
 //			sources[target] = result ;
-			compiler.compile(sources, target);
+			compiler.compile(t, target);
 		});
 	}
 }

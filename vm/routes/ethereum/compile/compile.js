@@ -54,29 +54,49 @@ function Compile() {
 
 			var result;
 			var getSource = source.sources;
-        	var test = new Promise(function(resolve, reject) {
-        			solc.loadRemoteVersion('latest', function (err, solcSnapshot) {
-						if (err) {
-							// An error was encountered, display and quit
-						}
-						var output = solcSnapshot.compile(getSource, 1)
-	        			resolve(output);						
-					})        		
-        	}).then(sources => {
-        		try {
-//        			console.log(sources);
-        			var input = compilerInput(sources, {optimize: 1, target: source.target});
-        			console.log(input);
-        			result = compiler.compileStandardWrapper(input, missingInputsCallback);
-        			result = JSON.parse(result);
-        		} catch (exception) {
-        			result = { 
-        				error: 'Uncaught JavaScript exception:\n' + exception
-        			}
-        		}
-        		console.log(result);	 
-	        	compilationFinished(result, missingInputs, source);        		
-        	});
+
+//			console.log(getSource);
+
+			var test = new Promise(function(resolve, reject) {
+				var input = compilerInput(getSource, {optimize:1 ,target: getSource.target});
+				resolve(input);
+			}).then(sources => {
+				try {
+					result = compiler.compileStandardWrapper(sources, missingInputsCallback);
+					result = JSON.parse(result);
+//					console.log(result);
+				} catch (exception) {
+					result = {
+						error: 'Uncaught Javascript exception\n' + exception
+					}
+				}
+				console.log(result);
+			})
+
+//         	var test = new Promise(function(resolve, reject) {
+//         			solc.loadRemoteVersion('latest', function (err, solcSnapshot) {
+// 						if (err) {
+// 							// An error was encountered, display and quit
+// 						}
+// 						var output = solcSnapshot.compile(getSource, 1)
+// 	        			resolve(output);						
+// 					})        		
+//         	}).then(sources => {
+//         		try {
+//         			console.log(sources);
+// //        			console.log(sources);
+//         			var input = compilerInput(sources, {optimize: 1, target: source.target});
+// //        			console.log(input);
+//         			result = compiler.compileStandardWrapper(input, missingInputsCallback);
+//         			result = JSON.parse(result);
+//         		} catch (exception) {
+//         			result = { 
+//         				error: 'Uncaught JavaScript exception:\n' + exception
+//         			}
+//         		}
+//         		console.log(result);	 
+// 	        	compilationFinished(result, missingInputs, source);        		
+//         	});
 
 		}
 	}
