@@ -57,21 +57,35 @@ function Compile() {
 
 //			console.log(getSource);
 
-			var test = new Promise(function(resolve, reject) {
-				var input = compilerInput(getSource, {optimize:1 ,target: getSource.target});
-				resolve(input);
-			}).then(sources => {
-				try {
-					result = compiler.compileStandardWrapper(sources, missingInputsCallback);
-					result = JSON.parse(result);
-//					console.log(result);
-				} catch (exception) {
-					result = {
-						error: 'Uncaught Javascript exception\n' + exception
-					}
-				}
-				console.log(result);
-			})
+			try {
+				var input = compilerInput(getSource, {optimize:1, target: getSource.target});				
+				result = compiler.compileStandardWrapper(input, missingInputsCallback);
+				result = JSON.parse(result);
+			} catch(exception) {
+				result = { error : 'Uncaught JavaScript exception:\n' + exception }
+			}
+
+			compilationFinished(result, missingInputs, getSource);
+
+
+// 			var test = new Promise(function(resolve, reject) {
+// 				var input = compilerInput(getSource, {optimize:1 ,target: getSource.target});
+// 				resolve(input);
+// 			}).then(sources => {
+// 				try {
+// 					result = compiler.compileStandardWrapper(sources, missingInputsCallback);
+// 					result = JSON.parse(result);
+// //					console.log(result);
+// 				} catch (exception) {
+// 					result = {
+// 						error: 'Uncaught Javascript exception\n' + exception
+// 					}
+// 				}
+// 				return result;
+// //				console.log(result);
+// 			}).then(result => {
+// 				compilationFinished(result, missingInputs, source);
+// 			});
 
 //         	var test = new Promise(function(resolve, reject) {
 //         			solc.loadRemoteVersion('latest', function (err, solcSnapshot) {
@@ -109,7 +123,7 @@ function Compile() {
   
 	function compilationFinished (data, missingInputs, source) {
     	var noFatalErrors = true // ie warnings are ok
-
+    	console.log(data);
     	if (!noFatalErrors) {
       		// There are fatal errors - abort here
     		self.lastCompilationResult = null
