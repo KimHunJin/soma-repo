@@ -125,12 +125,15 @@ function Compile() {
     	var noFatalErrors = true // ie warnings are ok
     	console.log(data);
     	if (!noFatalErrors) {
+    		console.log('no fatal error');
       		// There are fatal errors - abort here
     		self.lastCompilationResult = null
     	} else if (missingInputs !== undefined && missingInputs.length > 0) {
+    		    		console.log('compile error');
       		// try compiling again with the new set of inputs
       		internalCompile(source.sources, source.target, missingInputs)
     	} else {
+    		console.log('success');
     		data = updateInterface(data)
     		self.lastCompilationResult = {
         		data: data,
@@ -148,7 +151,10 @@ function Compile() {
   	}
 
 	function updateInterface (data) {
+		console.log('updateInterface');
+		console.log(data);
 		txHelper.visitContracts(data.contracts, (contract) => {
+			console.log(contract);
       		contracts[contract.file][contract.name].abi = solcABI.update(truncateVersion(currentVersion), contract.object.abi);
     	});
     	return data;
