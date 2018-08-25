@@ -1,6 +1,7 @@
 'use strict'
 
 var solc = require('solc');
+var solcABI = require('solc/abi');
 var fs = require('fs');
 var compilerInput = require('./compiler-input');
 var registry = require('../global/registry');
@@ -10,6 +11,7 @@ function Compile() {
 	var self = this;
 
 	var compileJSON;
+	var currentVersion;
 
 	onInternalCompilerLoaded();
 
@@ -43,6 +45,9 @@ function Compile() {
 
 		console.log('on Internal Compiler Loaded');
 		var compiler = solc;
+
+		currentVersion = compiler.version();
+
 		compileJSON = function(source, optimize, cb) {
 			console.log('compile json');
 
@@ -61,6 +66,8 @@ function Compile() {
 				var input = compilerInput(getSource, {optimize:1, target: getSource.target});				
 				result = compiler.compileStandardWrapper(input, missingInputsCallback);
 				result = JSON.parse(result);
+
+				console.log(result);
 			} catch(exception) {
 				result = { error : 'Uncaught JavaScript exception:\n' + exception }
 			}
@@ -123,7 +130,7 @@ function Compile() {
   
 	function compilationFinished (data, missingInputs, source) {
     	var noFatalErrors = true // ie warnings are ok
-    	console.log(data);
+ //   	console.log(data);
     	if (!noFatalErrors) {
     		console.log('no fatal error');
       		// There are fatal errors - abort here
@@ -152,10 +159,11 @@ function Compile() {
 
 	function updateInterface (data) {
 		console.log('updateInterface');
-		console.log(data);
+//		console.log(data);
+//		console.log(data.contracts);
 		txHelper.visitContracts(data.contracts, (contract) => {
-			console.log(contract);
-      		contracts[contract.file][contract.name].abi = solcABI.update(truncateVersion(currentVersion), contract.object.abi);
+//			console.log(contract);
+      		data.contracts[contract.file][contract.name].abi = solcABI.update(truncateVersion(currentVersion), contract.object.abi);
     	});
     	return data;
   	}

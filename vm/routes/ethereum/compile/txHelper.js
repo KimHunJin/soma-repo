@@ -23,8 +23,13 @@ module.exports = {
     * @param {Function} cb    - callback
     */
   visitContracts: (contracts, cb) => {
+    console.log('visit contract');
+    console.log(contracts);
     for (var file in contracts) {
+//      console.log(file);
+      console.log(contracts[file]);
       for (var name in contracts[file]) {
+        console.log(name);
         if (cb({ name: name, object: contracts[file][name], file: file })) return
       }
     }
