@@ -16,6 +16,12 @@ router.get('/addAccount', function(req, res) {
 
 router.get('/compiler', function(req, res) {
 	app.runCompiler();
+	res.end();
+});
+
+router.get('/test', function(req, res) {
+	app.test();
+	res.end();
 });
 
 module.exports = router;

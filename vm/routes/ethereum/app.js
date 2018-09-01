@@ -30,12 +30,14 @@ class App {
 		addAccount.apply(self);
 	}
 
+ // 컴파일
 	runCompiler() {
 		var self = this;
 		var target = "casino";
 		var sources = {};
 
 		var compiler = new Compiler();
+		registry.put({api: compiler, name: 'compiler'});
 
 		var test = new Promise(function(resolve, reject) {
 			resolve(getContent());
@@ -50,6 +52,14 @@ class App {
 			compiler.compile(t, target);
 		});
 	}
+
+	test() {
+		var self = this;
+		var compiler = registry.get('compiler').api;
+		console.log(compiler.lastCompilationResult);
+//		console.log(compiler.lastCompilationResult);
+	}
+
 }
 
 function getContent() {
