@@ -6,6 +6,7 @@ var globalRegistry = require('./global/registry');
 var txExecution = require('./txExecution');
 var EventManasger = require('./eventManager');
 var crypto = require('crypto');
+var txHelper = require('./txHelper');
 
 function UniversalDApp (opts, localRegistry) {
   var self = this
@@ -73,6 +74,10 @@ UniversalDApp.prototype.pendingTransactions = function () {
 
 UniversalDApp.prototype.pendingTransactionsCount = function () {
   return Object.keys(this.txRunner.pendingTxs).length;
+}
+
+UniversalDApp.prototype.getABI = function (contract) {
+  return txHelper.sortAbiFunction(contract.abi)
 }
 
 UniversalDApp.prototype.newAccount = function (password, cb) {

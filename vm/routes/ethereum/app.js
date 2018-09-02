@@ -56,7 +56,14 @@ class App {
 	test() {
 		var self = this;
 		var compiler = registry.get('compiler').api;
-		console.log(compiler.lastCompilationResult);
+//		console.log(compiler.lastCompilationResult);
+		var abi = compiler.getContract("Casino").object;
+
+		var dapp = registry.get('udapp').api;
+
+		console.log(dapp.getABI(abi));
+//		console.log(compiler.lastCompilationResult.data.contracts);
+//		console.log(compiler.lastCompilationResult.data.contracts.);
 //		console.log(compiler.lastCompilationResult);
 	}
 
