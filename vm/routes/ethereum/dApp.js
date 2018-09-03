@@ -1,7 +1,9 @@
 'use strict'
 var executionContext = require('./execution-context');
+var async = require('async')
 var TxRunner = require('ethereumjs-tx');
 var ethJSUtil = require('ethereumjs-util');
+var BN = ethJSUtil.BN;
 var globalRegistry = require('./global/registry');
 var txExecution = require('./txExecution');
 var EventManasger = require('./eventManager');
@@ -80,6 +82,25 @@ UniversalDApp.prototype.getABI = function (contract) {
   return txHelper.sortAbiFunction(contract.abi)
 }
 
+UniversalDApp.prototype.getBalance = function (address, cb) {
+  var self = this
+
+  address = ethJSUtil.stripHexPrefix(address)
+
+  if (!self.accounts) {
+    return cb('No accounts?')
+  }
+
+  executionContext.vm().stateManager.getAccountBalance(new Buffer(address, 'hex'), function (err, res) {
+    if (err) {
+      cb('Account not found')
+    } else {
+      cb(null, new BN(res).toString(10))
+    }
+  })
+  
+}
+
 UniversalDApp.prototype.newAccount = function (password, cb) {
 
   var privateKey
@@ -136,6 +157,14 @@ UniversalDApp.prototype.call = function (isUserAction, args, value, lookupOnly, 
   }, (data, runTxCallback) => {
     // called for libraries deployment
     self.runTx(data, runTxCallback);
+  });
+}
+
+UniversalDApp.prototype.createContract = function (data, callback) {
+  console.log(data);
+  this.runTx({data: data, useCall: false}, (error, txResult) => {
+    // see universaldapp.js line 660 => 700 to check possible values of txResult (error case)
+    callback(error, txResult)
   });
 }
 

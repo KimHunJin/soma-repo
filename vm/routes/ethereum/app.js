@@ -7,6 +7,7 @@ var txFormat = require('./txFormat');
 var txHelper = require('./txHelper');
 var fs = require('fs');
 var Compiler = require('./compile/compile');
+var Web3 = require('web3');
 
 class App {
 	constructor() {
@@ -28,6 +29,32 @@ class App {
 	createAccount() {
 		var self = this;
 		addAccount.apply(self);
+	}
+
+	selectAccount() {
+
+		var web3 = new Web3();
+		// todo ; select index (account index)
+		// todo ; input value (ether)
+
+		var self = this;
+		var dapp = registry.get('udapp').api;
+
+		var currentAccount;
+		dapp.getAccounts((err, accounts) => {
+			if (err) { console.log('cannot find accounts'); }
+			if (accounts && accounts[0]) {
+				currentAccount = accounts[0];
+			} else {
+				console.log('unknown');
+			}
+		});
+
+		registry.put({api: currentAccount, name:'currentAccount'});
+
+		dapp.getBalance(currentAccount, function(err, res) {
+			console.log(executionContext.web3().fromWei(res, 'ether'));
+		});
 	}
 
  // 컴파일
@@ -53,6 +80,8 @@ class App {
 		});
 	}
 
+
+
 	test() {
 		var self = this;
 		var compiler = registry.get('compiler').api;
@@ -61,7 +90,26 @@ class App {
 
 		var dapp = registry.get('udapp').api;
 
+		var currentAccount = registry.get('currentAccount').api;
+
 		console.log(dapp.getABI(abi));
+
+		self._components = {};
+		self._components.transactionContextAPI = {
+			getAddress: (cb) => {
+				cb(null, currentAccount);
+			},
+			getValue: (cb) => {
+				cb(null, executionContext.web3().toWei(5, 'wei'));
+			},
+			getGasLimit: (cb) => {
+				cb(null, 3000000);
+			}
+		}		
+
+		dapp.resetAPI(self._components.transactionContextAPI);
+
+		createInstance.apply(self);
 //		console.log(compiler.lastCompilationResult.data.contracts);
 //		console.log(compiler.lastCompilationResult.data.contracts.);
 //		console.log(compiler.lastCompilationResult);
@@ -83,6 +131,7 @@ function getContent() {
 
 function createInstance() {
 
+	var compiler = registry.get('compiler').api;
 	var dapp = registry.get('udapp').api;
 
 	// contract 구조
@@ -90,11 +139,26 @@ function createInstance() {
 	//		object : contracts[file][contractName]
 	//		file   : file
 	//	}
-	var contract = '';
+	var contract = {
+		name: "Casino",
+		contract: compiler.getContract("Casino")
+	};
+
+	console.log(contract);
+
+	var args = [10,10];
+
+	console.log(args);
 
 	// 여기서 compiler로부터 abi만 추출 받는다.
 	var constructor = txHelper.getConstructorInterface(contract.contract.object.abi);
-	txFormat.buildData(selectedContract.name, contract.contract.object, self.compiler.getContracts(), true, constructor, args, (error, data) => {
+	console.log(constructor);
+
+
+	console.log('build data start');
+	console.log('');
+	txFormat.buildData(contract.name, contract.contract.object, compiler.getContracts(), true, constructor, args, (error, data) => {
+		console.log(data);
 		dapp.createContract(data, (error, txResult) => {
 			if(txResult.result.status && txResult.result.status == '0x0') {
 				console.log('transaction execution fail');

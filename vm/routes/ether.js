@@ -24,4 +24,9 @@ router.get('/test', function(req, res) {
 	res.end();
 });
 
+router.get('/select', function(req, res) {
+	app.selectAccount();
+	res.end();
+})
+
 module.exports = router;

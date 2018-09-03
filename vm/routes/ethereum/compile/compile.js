@@ -20,6 +20,13 @@ function Compile() {
 		source: null
 	}
 
+	this.getContracts = () => {
+		if (this.lastCompilationResult.data && this.lastCompilationResult.data.contracts) {
+			return this.lastCompilationResult.data.contracts
+		}
+		return null
+	}	
+
 	this.getContract = (name) => {
 		if (this.lastCompilationResult.data && this.lastCompilationResult.data.contracts) {
 			return txHelper.getContract(name, this.lastCompilationResult.data.contracts)
