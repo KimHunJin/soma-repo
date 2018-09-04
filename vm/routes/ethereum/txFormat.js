@@ -174,6 +174,18 @@ module.exports = {
     var data = ''
     var dataHex = ''
 
+    console.log('build data start in txFormat');
+    console.log(contractName);
+    console.log(contract);
+    console.log(contracts);
+    console.log(isConstructor);
+    console.log(funAbi);
+    console.log(params);
+    console.log(callback);
+    console.log(callbackStep);
+    console.log(callbackDeployLibrary);
+
+
     if (params.indexOf('raw:0x') === 0) {
       // in that case we consider that the input is already encoded and *does not* contain the method signature
       dataHex = params.replace('raw:0x', '')

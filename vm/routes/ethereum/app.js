@@ -100,7 +100,7 @@ class App {
 				cb(null, currentAccount);
 			},
 			getValue: (cb) => {
-				cb(null, executionContext.web3().toWei(5, 'wei'));
+				cb(null, executionContext.web3().toWei('5', 'wei'));
 			},
 			getGasLimit: (cb) => {
 				cb(null, 3000000);
@@ -158,13 +158,20 @@ function createInstance() {
 	console.log('build data start');
 	console.log('');
 	txFormat.buildData(contract.name, contract.contract.object, compiler.getContracts(), true, constructor, args, (error, data) => {
+		console.log('build data');
 		console.log(data);
 		dapp.createContract(data, (error, txResult) => {
+			console.log(data);
 			if(txResult.result.status && txResult.result.status == '0x0') {
 				console.log('transaction execution fail');
 			}
 			console.log(data);
+			var address = txResult.result.createdAddress;
 		});
+	}, (msg) => {
+		console.log(msg);
+	}, (data, runTxCallback) => {
+		dapp.runTx(data, runTxCallback);
 	});
 }
 

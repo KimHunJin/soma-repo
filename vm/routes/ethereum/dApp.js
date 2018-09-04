@@ -209,6 +209,7 @@ UniversalDApp.prototype.runTx = function (args, cb) {
       })
     },
     function runTransaction (fromAddress, value, gasLimit, next) {
+      console.log(args);
       var tx = { to: args.to, data: args.data.dataHex, useCall: args.useCall, from: fromAddress, value: value, gasLimit: gasLimit }
       var payLoad = { funAbi: args.data.funAbi, funArgs: args.data.funArgs, contractBytecode: args.data.contractBytecode, contractName: args.data.contractName }
       var timestamp = Date.now();
