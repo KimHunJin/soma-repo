@@ -13,6 +13,7 @@ class App {
 	constructor() {
 		var self = this;
 		registry.put({api: self, name: 'app'});
+		registry.put({api: msg => console.log(msg), name: 'logCallback'})		
 	}
 
 	init () {
@@ -21,19 +22,19 @@ class App {
 	}
 
 // 개인 정보
-	getAccount() {
-		var self = this;
-		accounts.apply(self);
-	}
+getAccount() {
+	var self = this;
+	accounts.apply(self);
+}
 
-	createAccount() {
-		var self = this;
-		addAccount.apply(self);
-	}
+createAccount() {
+	var self = this;
+	addAccount.apply(self);
+}
 
-	selectAccount() {
+selectAccount() {
 
-		var web3 = new Web3();
+	var web3 = new Web3();
 		// todo ; select index (account index)
 		// todo ; input value (ether)
 
@@ -58,62 +59,62 @@ class App {
 	}
 
  // 컴파일
-	runCompiler() {
-		var self = this;
-		var target = "casino";
-		var sources = {};
+ runCompiler() {
+ 	var self = this;
+ 	var target = "casino";
+ 	var sources = {};
 
-		var compiler = new Compiler();
-		registry.put({api: compiler, name: 'compiler'});
+ 	var compiler = new Compiler();
+ 	registry.put({api: compiler, name: 'compiler'});
 
-		var test = new Promise(function(resolve, reject) {
-			resolve(getContent());
-		}).then(content => {
+ 	var test = new Promise(function(resolve, reject) {
+ 		resolve(getContent());
+ 	}).then(content => {
 
-			sources = { content };
-			var t = { 
-				casino : sources
-			};
+ 		sources = { content };
+ 		var t = { 
+ 			casino : sources
+ 		};
 //			console.log(t);
 //			sources[target] = result ;
-			compiler.compile(t, target);
-		});
-	}
+compiler.compile(t, target);
+});
+ }
 
 
 
-	test() {
-		var self = this;
-		var compiler = registry.get('compiler').api;
+ test() {
+ 	var self = this;
+ 	var compiler = registry.get('compiler').api;
 //		console.log(compiler.lastCompilationResult);
-		var abi = compiler.getContract("Casino").object;
+var abi = compiler.getContract("Casino").object;
 
-		var dapp = registry.get('udapp').api;
+var dapp = registry.get('udapp').api;
 
-		var currentAccount = registry.get('currentAccount').api;
+var currentAccount = registry.get('currentAccount').api;
 
-		console.log(dapp.getABI(abi));
+console.log(dapp.getABI(abi));
 
-		self._components = {};
-		self._components.transactionContextAPI = {
-			getAddress: (cb) => {
-				cb(null, currentAccount);
-			},
-			getValue: (cb) => {
-				cb(null, executionContext.web3().toWei('5', 'wei'));
-			},
-			getGasLimit: (cb) => {
-				cb(null, 3000000);
-			}
-		}		
+self._components = {};
+self._components.transactionContextAPI = {
+	getAddress: (cb) => {
+		cb(null, currentAccount);
+	},
+	getValue: (cb) => {
+		cb(null, executionContext.web3().toWei('5', 'wei'));
+	},
+	getGasLimit: (cb) => {
+		cb(null, 3000000);
+	}
+}		
 
-		dapp.resetAPI(self._components.transactionContextAPI);
+dapp.resetAPI(self._components.transactionContextAPI);
 
-		createInstance.apply(self);
+createInstance.apply(self);
 //		console.log(compiler.lastCompilationResult.data.contracts);
 //		console.log(compiler.lastCompilationResult.data.contracts.);
 //		console.log(compiler.lastCompilationResult);
-	}
+}
 
 }
 
@@ -133,7 +134,7 @@ function createInstance() {
 
 	var compiler = registry.get('compiler').api;
 	var dapp = registry.get('udapp').api;
-
+	var logCallback = registry.get('logCallback').api;
 	// contract 구조
 	//	{
 	//		object : contracts[file][contractName]
@@ -146,7 +147,7 @@ function createInstance() {
 
 	console.log(contract);
 
-	var args = [10,10];
+	var args = "10,10";
 
 	console.log(args);
 
@@ -158,18 +159,22 @@ function createInstance() {
 	console.log('build data start');
 	console.log('');
 	txFormat.buildData(contract.name, contract.contract.object, compiler.getContracts(), true, constructor, args, (error, data) => {
+
 		console.log('build data');
 		console.log(data);
-		dapp.createContract(data, (error, txResult) => {
-			console.log(data);
-			if(txResult.result.status && txResult.result.status == '0x0') {
-				console.log('transaction execution fail');
-			}
-			console.log(data);
-			var address = txResult.result.createdAddress;
-		});
+		if(!error) {
+			dapp.createContract(data, (error, txResult) => {
+				if(txResult.result.status && txResult.result.status == '0x0') {
+					console.log('transaction execution fail');
+					return;
+				}
+				var address = txResult.result.createdAddress;
+			});
+		} else {
+			logCallback('error' + error);
+		}
 	}, (msg) => {
-		console.log(msg);
+		logCallback(msg);
 	}, (data, runTxCallback) => {
 		dapp.runTx(data, runTxCallback);
 	});

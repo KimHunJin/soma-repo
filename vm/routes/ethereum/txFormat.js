@@ -175,11 +175,17 @@ module.exports = {
     var dataHex = ''
 
     console.log('build data start in txFormat');
+    console.log('name');
     console.log(contractName);
+    console.log('contract');
     console.log(contract);
+    console.log('contracts');
     console.log(contracts);
+    console.log('isConstructor');
     console.log(isConstructor);
+    console.log('abi');
     console.log(funAbi);
+    console.log('params');
     console.log(params);
     console.log(callback);
     console.log(callbackStep);
