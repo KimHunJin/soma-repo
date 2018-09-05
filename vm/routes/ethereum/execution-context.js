@@ -74,6 +74,10 @@ function ExecutionContext(){
 	this.web3 = function() {
 		return web3Vm;
 	}
+
+	this.isVM = function() {
+		return ExecutionContext === 'vm';
+	}
 }
 
 module.exports = new ExecutionContext();

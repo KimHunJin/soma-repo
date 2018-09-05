@@ -1,7 +1,6 @@
 'use strict'
 var executionContext = require('./execution-context');
 var async = require('async')
-var TxRunner = require('ethereumjs-tx');
 var ethJSUtil = require('ethereumjs-util');
 var BN = ethJSUtil.BN;
 var globalRegistry = require('./global/registry');
@@ -9,15 +8,16 @@ var txExecution = require('./txExecution');
 var EventManasger = require('./eventManager');
 var crypto = require('crypto');
 var txHelper = require('./txHelper');
+var TxRunner = require('./txRunner');
 
 function UniversalDApp (opts, localRegistry) {
   var self = this
   this.event = new EventManasger();
   self.data = {}
   self._components = {}
-  self._components.registry = localRegistry || globalRegistry
-  self.removable = opts.removable
-  self.removable_instances = opts.removable_instances
+  self._components.registry = localRegistry || globalRegistry;
+  self.removable = opts.removable;
+  self.removable_instances = opts.removable_instances;
 
   self.txRunner = new TxRunner({});
   self.data.contractsDetails = {};
