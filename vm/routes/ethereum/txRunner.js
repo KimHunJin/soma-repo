@@ -139,6 +139,8 @@ TxRunner.prototype.runInNode = function (from, to, data, value, gasLimit, useCal
       })
     })
   }
+  
+  // not found estimateGas
   executionContext.web3().eth.estimateGas(tx, function (err, gasEstimation) {
     gasEstimationForceSend(err, () => {
       // callback is called whenever no error
